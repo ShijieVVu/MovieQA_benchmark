@@ -8,12 +8,11 @@ Release: v1.0
 Date: 18 Nov 2015
 """
 
-from collections import namedtuple
 import json
+from collections import namedtuple
 
 import config as cfg
 import story_loader
-
 
 TextSource = namedtuple('TextSource', 'plot dvs subtitle script')
 
@@ -22,6 +21,7 @@ MovieInfo = namedtuple('Movie', 'name year genre text video')
 
 QAInfo = namedtuple('QAInfo',
                     'qid question answers correct_index imdb_key video_clips')
+
 
 class DataLoader(object):
     """MovieQA: Data loader class"""
@@ -36,7 +36,7 @@ class DataLoader(object):
         self._populate_movie()
         self._populate_splits()
         self._populate_qa()
-        print 'Initialized MovieQA data loader!'
+        print('Initialized MovieQA data loader!')
 
     # region Initialize and Load class data
     def _populate_movie(self):
@@ -52,8 +52,8 @@ class DataLoader(object):
             self.movies_map[movie['imdb_key']] = MovieInfo(
                 movie['name'], movie['year'], movie['genre'], ts, vs)
 
-        self.movies_map_inv = {(v.name + ' ' + v.year):k
-                               for k, v in self.movies_map.iteritems()}
+        self.movies_map_inv = {(v.name + ' ' + v.year): k
+                               for k, v in self.movies_map.items()}
 
     def _populate_qa(self):
         """Create a list of QaInfo for all question and answers.
@@ -74,32 +74,31 @@ class DataLoader(object):
 
     # endregion
 
-    # region Pretty-Print :)
+    # region Pretty-Print(:))
     def pprint_qa(self, qa):
-        """Pretty print a QA.
+        """Pretty print(a QA.)
         """
-        print '----------------------------------------'
+        print('----------------------------------------')
         movie = self.movies_map[qa.imdb_key]
-        print 'Movie: %s %s' % (movie.name, movie.year)
-        print 'Question: %s' % qa.question
-        print 'Options:'
+        print('Movie: %s %s' % (movie.name, movie.year))
+        print('Question: %s' % qa.question)
+        print('Options:')
         for k, ans in enumerate(qa.answers):
             if qa.correct_index == k:
-                print '***',
-            print '\t%s' % ans
-        print '----------------------------------------'
-
+                print('***',)
+            print('\t%s' % ans)
+        print('----------------------------------------')
 
     def pprint_movie(self, movie):
-        """Pretty print a Movie.
+        """Pretty print(a Movie.)
         """
-        print '----------------------------------------'
-        print 'Movie: %s %s' % (movie.name, movie.year)
-        print 'Genre: %s' % movie.genre
-        print 'Available texts:'
+        print('----------------------------------------')
+        print('Movie: %s %s' % (movie.name, movie.year))
+        print('Genre: %s' % movie.genre)
+        print('Available texts:')
         for k, v in movie.text._asdict().iteritems():
-            print '%s: %s' % (k.rjust(12), v)
-        print '----------------------------------------'
+            print('%s: %s' % (k.rjust(12), v))
+        print('----------------------------------------')
 
     # endregion
 
@@ -124,7 +123,6 @@ class DataLoader(object):
             raise ValueError('Invalid split type. Use "train", "val", "test", or "full"')
 
         return this_split_movies
-
 
     def get_story_qa_data(self, split='train', story_type='plot'):
         """Provide data based on a particular split and story-type.
@@ -151,7 +149,6 @@ class DataLoader(object):
 
         return story, qa
 
-
     def get_video_list(self, split='train', video_type='qa_clips'):
         """Provide data for a particular split and video type.
 
@@ -175,7 +172,7 @@ class DataLoader(object):
         if video_type == 'qa_clips':
             # add each qa's video clips to video list
             for qa_one in qa:
-                video_list.update({qa_one.qid:qa_one.video_clips})
+                video_list.update({qa_one.qid: qa_one.video_clips})
 
         elif video_type == 'all_clips':
             # collect list of clips by movie
@@ -183,7 +180,7 @@ class DataLoader(object):
                 if qa_one.imdb_key in video_list.keys():
                     video_list[qa_one.imdb_key].extend(qa_one.video_clips)
                 else:
-                    video_list.update({qa_one.imdb_key:list(qa_one.video_clips)})
+                    video_list.update({qa_one.imdb_key: list(qa_one.video_clips)})
 
             # keep non-repeated clips
             for imdb_key in video_list.keys():
@@ -193,4 +190,3 @@ class DataLoader(object):
             raise ValueError('Invalid video type. Use "qa_clips" or "all_clips"')
 
         return video_list, qa
-
